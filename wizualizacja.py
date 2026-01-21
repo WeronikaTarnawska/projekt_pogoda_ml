@@ -19,7 +19,7 @@ fig1.suptitle('Analiza Długoterminowa: Trendy i Sezonowość (Wrocław)', fonts
 
 # Wykres 1.1: Trend wieloletni (Rolling Average)
 # Rysujemy surowe dane
-ax1.plot(df_daily.index, df_daily['temp'], color='lightgray', alpha=0.3, label='Dane dzienne')
+ax1.plot(df_daily.index, df_daily['temp'], color='lightgray', alpha=0.7, label='Dane dzienne')
 # Rysujemy średnią kroczącą roczną (365 dni) - pokazuje zmianę klimatu
 df_daily['rolling_year'] = df_daily['temp'].rolling(window=365, center=True).mean()
 ax1.plot(df_daily.index, df_daily['rolling_year'], color='#d62728', linewidth=2.5, label='Trend roczny (klimat)')
