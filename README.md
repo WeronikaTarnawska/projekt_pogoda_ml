@@ -22,8 +22,10 @@
 
 Potencjalne problemy:
 
-- Normalnie pogodę prognozuje się [inaczej](https://en.wikipedia.org/wiki/Numerical_weather_prediction), bo pogoda zależy od innych czynników niż tylko przeszłe stany
-- Modele lubią zauważać że pogoda zmienia się raczej wolno i przewidywać "jutro będzie tak jak dzisiaj"
+- Normalnie pogodę prognozuje się [inaczej](https://en.wikipedia.org/wiki/Numerical_weather_prediction),
+bo pogoda zależy od innych czynników niż tylko przeszłe stany
+- Modele lubią zauważać że pogoda zmienia się raczej wolno i przewidywać
+"jutro będzie tak jak dzisiaj"
 
 Baseline:
 
@@ -36,18 +38,27 @@ Lepsze pomysły:
 
 - Metody uczenia zespołowego: Random Forest, AdaBoost, GradientBoost, XGBoost
   - "Małe" modele trenowane na podzbiorach danych z różnych okresów
-  - jenen mały model przewiduje temperaturę za godzinę, drugi za dwie, itd, i potem z tego predykcja średniej temperatury danego dnia
-  - do tego trzeba zrobić feature engineering: każda krotka dostaje dane o tym co się działo przez ostatni jakiś okres czasu (np temperatura wczoraj, średnia temperatura w tym tygodniu, miesiąc, pora roku) - chcemu obserwować sezonowość + lokalny trend
+  - jenen mały model przewiduje temperaturę za godzinę, drugi za dwie, itd,
+  i potem z tego predykcja średniej temperatury danego dnia
+  - do tego trzeba zrobić feature engineering:
+  każda krotka dostaje dane o tym co się działo przez ostatni jakiś okres czasu
+  (np temperatura wczoraj, średnia temperatura w tym tygodniu, miesiąc, pora roku),
+  chcemy obserwować sezonowość + lokalny trend
 - lightbgm (on w sumie też robi ensemble) - był na liście 10
 - dekompozycja szeregu czasowego: **wtarn**
-  - szereg ma trend sezonowy, trend dobowy, i losowy szum wokół tego
-  - sprawdzić jak dużo umiemy przewidzieć ponad ten losowy szum
-  - jakaś analiza błędów vs sezon -> np bardziej mylimy się wiosną niż latem
+  - szereg ma trend sezonowy, trend dobowy, i losowy szum wokół tego *✔*
+  - sprawdzić jak dużo umiemy przewidzieć ponad ten losowy szum *✔*
+  - jakaś analiza błędów vs sezon -> np bardziej mylimy się wiosną niż latem *✔*
+  - czy częściej przewidujemy za mało czy za dużo,
+  kiedy za mało a kiedy za dużo *TODO*
 - Inne metody do operowania na szeregach czasowych (ich nie było na wykładzie)
   - Wygładzanie wykładnicze (Exponential Smoothing / Holt-Winters) **wtarn**
   - Statystyka: ARIMA / SARIMA **wtarn**
-  - Modele addytywne: Facebook Prophet - jest dostępny za freeko, biblioteka `prophet` **młuk**
-- Dodać więcej stacji wokół punktu dla którego robimy predykcje. Wtedy można przewidywać na podstawie kierunku wiatru: jak wieje z północy do jutro będzie taka pogoda jak dzisiaj jest na północ od wrocławia.
+  - Modele addytywne: Facebook Prophet -
+  jest dostępny za freeko, biblioteka `prophet` **młuk**
+- Dodać więcej stacji wokół punktu dla którego robimy predykcje.
+Wtedy można przewidywać na podstawie kierunku wiatru:
+jak wieje z północy do jutro będzie taka pogoda jak dzisiaj jest na północ od wrocławia.
 
 ---
 
