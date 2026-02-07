@@ -1,71 +1,93 @@
-# _
+# Prognoza pogody
 
-## konwencja
+Projekt na kurs *uczenie maszynowe*, Instytut Informatyki Uniwersytetu Wrocławskiego
 
-- **Robimy plik per "duży temat" (notebook / py)**
+Autorzy: Weronika Tarnawska i Michał Łukasik
 
-- **Na prezentację na środę 21.01 trzeba zrobić notebooka z najważniejszymi rzeczami**
+## Cel projektu
 
-- **Na oddawanie projektu też trzeba zrobić notebook prezentacyjny (i slajdy?)**
+Predykcja pogody na podstawie danych historycznych
 
-## kto co robi
+- Normalnie pogodę prognozuje się rozwiązując równania różniczkowe z danych z atmosfery
+[(numerical weather prediction)](https://en.wikipedia.org/wiki/Numerical_weather_prediction)
+- My chcemy podjąć próbę modelowania pogody jako szereg czasowy
+- I zobaczyć jak dużo (czy cokolwiek) ponad losowy szum da się w ten sposób przewidzieć
 
-| temat | kto |
-|-------|-----|
-|ARIMA,SARIMA,exponential smoothing|wtarn|
-|dekompozycja szeregu czasowego i analiza tego|wtarn|
-|prophet|młuk|
-|jenen mały model przewiduje temperaturę za godzinę, drugi za dwie, itd,|wtarn (ale nie wiem czy w końcu to zrobię, może jak będę miała dużo czasu)|
-|XGBoost (ciąg dalszy)|młuk|
+Ograniczyliśmy problem prognozy do dwóch zadań:
 
-## Pytania, pomysły, notatki
+1. Prognoza średniej temperatury na kolejny dzień i na kolejną noc
+2. Prognoza "czy następnego dnia będzie padać"
 
-Potencjalne problemy:
+## Dane
 
-- Normalnie pogodę prognozuje się [inaczej](https://en.wikipedia.org/wiki/Numerical_weather_prediction),
-bo pogoda zależy od innych czynników niż tylko przeszłe stany
-- Modele lubią zauważać że pogoda zmienia się raczej wolno i przewidywać
-"jutro będzie tak jak dzisiaj"
+- [Meteostat](https://dev.meteostat.net/python)
+- Korzystamy z danych godzinowych
+- Robimy predykcje dla stacji Wrocław
+- W jednym z modeli korzystamy również z danych z sąsiednich stacji: Legnica, Opole, Poznan
 
-Baseline:
+## Zawartość projektu
 
-- dzisiaj jest tak jak wczoraj
-- zawsze średnia
+### Dependencje
+
+Żeby uruchomić skrypty potrzebny będzie python3 (>=3.12 jest ok, nie gwarantuję, że starszy będzie działał),
+i biblioteki: `numpy`,`pandas`, ... TODO
+
+Można je zainstalować na przykład tak:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install TODO
+```
+
+### Pobranie danych
+
+Przed uruchomieniem notebooków trzeba pobrać dane:
+
+```bash
+python download_data.py
+```
+
+Po uruchomieniu, w aktualnym katalogu pojawią się pliki 
+(TODO) `wroclaw_multi_station.csv` i `wroclaw_multi_station_full.csv`,
+zawierające odpowiednio dane czyste i po wstępnym preprocessingu.
+
+### Notebooki
+
+- `eda.ipynb` - Eksploracyjna analiza danych (EDA) – statystyki opisowe, rozkłady zmiennych, korelacje, brakujące wartości, obserwacje odstające, wnioski z analizy
+- `preprocess.ipybn` - feature engineering i agregacja day/night
+
+#### Prognoza temperatury
+
+<!-- 
+Szczegółowy opis użytych modeli – jeśli nie są to klasyczne algorytmy omówione na wykładzie
+Metodologia ewaluacji – podział danych (train/test/validation), metryki jakości, walidacja krzyżowa
+ -->
+
+- baselines
+- xgboots bez dodatkowych stacji
+- xgboost z dodatkowymi stacjiami
+- sarima
 - regresja liniowa
-- regresja wielomianowa? (może być już fajna i przydatna do właściwych predykcji)
+- prophet
 
-Lepsze pomysły:
+#### Prognoza deszczu
 
-- Metody uczenia zespołowego: Random Forest, AdaBoost, GradientBoost, XGBoost
-  - "Małe" modele trenowane na podzbiorach danych z różnych okresów
-  - jenen mały model przewiduje temperaturę za godzinę, drugi za dwie, itd,
-  i potem z tego predykcja średniej temperatury danego dnia
-  - do tego trzeba zrobić feature engineering:
-  każda krotka dostaje dane o tym co się działo przez ostatni jakiś okres czasu
-  (np temperatura wczoraj, średnia temperatura w tym tygodniu, miesiąc, pora roku),
-  chcemy obserwować sezonowość + lokalny trend
-- lightbgm (on w sumie też robi ensemble) - był na liście 10
-- dekompozycja szeregu czasowego: **wtarn**
-  - szereg ma trend sezonowy, trend dobowy, i losowy szum wokół tego *✔*
-  - sprawdzić jak dużo umiemy przewidzieć ponad ten losowy szum *✔*
-  - jakaś analiza błędów vs sezon -> np bardziej mylimy się wiosną niż latem *✔*
-  - czy częściej przewidujemy za mało czy za dużo,
-  kiedy za mało a kiedy za dużo *TODO*
-- Inne metody do operowania na szeregach czasowych (ich nie było na wykładzie)
-  - Wygładzanie wykładnicze (Exponential Smoothing / Holt-Winters) **wtarn**
-  - Statystyka: ARIMA / SARIMA **wtarn**
-  - Modele addytywne: Facebook Prophet -
-  jest dostępny za freeko, biblioteka `prophet` **młuk**
-- Dodać więcej stacji wokół punktu dla którego robimy predykcje.
-Wtedy można przewidywać na podstawie kierunku wiatru:
-jak wieje z północy do jutro będzie taka pogoda jak dzisiaj jest na północ od wrocławia.
+- baselines (persistance, season)
+- regresjia logistyczna
+- xgboost
+- adaboost/ randomforest
 
----
+### Wyniki
 
-## Inne losowe rzeczy
+<!-- 
+Szczegółowy opis uzyskanych wyników – porównanie modeli, analiza błędów, wizualizacje
+Wnioski końcowe – podsumowanie, ograniczenia rozwiązania, perspektywy rozwoju 
+-->
 
-### Źródła i pomoce
+`results.md`
 
-- [kaggle: time series forecasting tutorial](https://www.kaggle.com/code/iamleonie/intro-to-time-series-forecasting)
-- [tensorflow tutorial](https://www.tensorflow.org/tutorials/structured_data/time_series)
-- [?](https://www.tigerdata.com/blog/what-is-time-series-forecasting)
+- coś o tym że problem jest trudny i jak się tak naprawdę przewiduje pogodę
+- porównanie modeli do deszczu
+- porównanie modeli do temperatury
+- wnioski: że prognoza chujowa, ale lepsza niż nasz baseline, a że było to trudne, to myślę że ogłaszamy sukces
