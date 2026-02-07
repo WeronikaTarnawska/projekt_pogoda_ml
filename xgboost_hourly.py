@@ -123,7 +123,11 @@ plt.plot(y_test.index[-n_days:], y_test.values[-n_days:], label='Prawdziwa Śred
 plt.plot(y_test.index[-n_days:], preds[-n_days:], label='Prognoza XGBoost', color='green', linestyle='--')
 plt.title('Prognoza Średniej Temperatury na podstawie danych godzinowych')
 plt.legend()
+plt.tight_layout()
+# plt.savefig('xgb_demo_result.png')
 plt.show()
 
 xgb.plot_importance(model, max_num_features=15, title='Najważniejsze cechy', importance_type='gain')
+plt.tight_layout()
+# plt.savefig('xgb_importance.png')
 plt.show()

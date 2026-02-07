@@ -96,7 +96,7 @@ def prep_data():
 ################################################
 # Evaluation Helper Function
 ################################################
-def evaluate_model(y_true_day, y_pred_day, y_true_night, y_pred_night, model_name):
+def evaluate_model(y_true_day, y_pred_day, y_true_night, y_pred_night, model_name, test_df):
     print(f"\n--- {model_name} ---")
 
     # Calculate metrics
@@ -113,7 +113,7 @@ def evaluate_model(y_true_day, y_pred_day, y_true_night, y_pred_night, model_nam
         print(f"[{period:<5}] RMSE: {rmse:.2f}, MAE: {mae:.2f}, R2: {r2:.2f}")
 
     # Calculate errors for plotting
-    test_copy = test.copy()
+    test_copy = test_df.copy()
     test_copy["error_day"] = y_true_day - y_pred_day
     test_copy["error_night"] = y_true_night - y_pred_night
 
@@ -197,89 +197,93 @@ def predict_decomposition(train_df, test_df, target_col, add_noise=True):
 
 
 ################################################
+if __name__ == "__main__":
+    # Data Preparation
+    df_daily = prep_data()
 
-# Data Preparation
-df_daily = prep_data()
+    # Split (Test = Last 365 Days)
+    last_timestamp = df_daily.index.max()
 
-# Split (Test = Last 365 Days)
-last_timestamp = df_daily.index.max()
+    cutoff_date = last_timestamp - pd.Timedelta(days=365)
 
-cutoff_date = last_timestamp - pd.Timedelta(days=365)
+    train = df_daily[df_daily.index <= cutoff_date]
+    test = df_daily[df_daily.index > cutoff_date].copy()
 
-train = df_daily[df_daily.index <= cutoff_date]
-test = df_daily[df_daily.index > cutoff_date].copy()
-
-print(f"Train set: {train.index.min().date()} to {train.index.max().date()}")
-print(f"Test set: {test.index.min().date()} to {test.index.max().date()}")
+    print(f"Train set: {train.index.min().date()} to {train.index.max().date()}")
+    print(f"Test set: {test.index.min().date()} to {test.index.max().date()}")
 
 
-################################################
-# 1. Baseline: Tomorrow will be the same as today (Persistence)
-################################################
+    ################################################
+    # 1. Baseline: Tomorrow will be the same as today (Persistence)
+    ################################################
 
-pred_day_persistence = test["temp_day_current"]
-pred_night_persistence = test["temp_night_current"]
+    pred_day_persistence = test["temp_day_current"]
+    pred_night_persistence = test["temp_night_current"]
 
-evaluate_model(
-    test["target_temp_day"],
-    pred_day_persistence,
-    test["target_temp_night"],
-    pred_night_persistence,
-    "Baseline 1: Persistence",
-)
+    evaluate_model(
+        test["target_temp_day"],
+        pred_day_persistence,
+        test["target_temp_night"],
+        pred_night_persistence,
+        "Baseline 1: Persistence",
+        test,
+    )
 
-################################################
-# 2. Baseline: Monthly Average (Climatology)
-################################################
+    ################################################
+    # 2. Baseline: Monthly Average (Climatology)
+    ################################################
 
-monthly_means_day = train.groupby("month")["temp_day_current"].mean()
-monthly_means_night = train.groupby("month")["temp_night_current"].mean()
+    monthly_means_day = train.groupby("month")["temp_day_current"].mean()
+    monthly_means_night = train.groupby("month")["temp_night_current"].mean()
 
-pred_day_monthly = test["month"].map(monthly_means_day)
-pred_night_monthly = test["month"].map(monthly_means_night)
+    pred_day_monthly = test["month"].map(monthly_means_day)
+    pred_night_monthly = test["month"].map(monthly_means_night)
 
-evaluate_model(
-    test["target_temp_day"],
-    pred_day_monthly,
-    test["target_temp_night"],
-    pred_night_monthly,
-    "Baseline 2: Monthly Average",
-)
+    evaluate_model(
+        test["target_temp_day"],
+        pred_day_monthly,
+        test["target_temp_night"],
+        pred_night_monthly,
+        "Baseline 2: Monthly Average",
+        test,
+    )
 
-################################################
-# 3. Baseline: Decomposition (Trend + Season + Noise)
-################################################
+    ################################################
+    # 3. Baseline: Decomposition (Trend + Season + Noise)
+    ################################################
 
-pred_day_decomp = predict_decomposition(train, test, "temp_day_current", add_noise=True)
-pred_night_decomp = predict_decomposition(
-    train, test, "temp_night_current", add_noise=True
-)
+    pred_day_decomp = predict_decomposition(train, test, "temp_day_current", add_noise=True)
+    pred_night_decomp = predict_decomposition(
+        train, test, "temp_night_current", add_noise=True
+    )
 
-evaluate_model(
-    test["target_temp_day"],
-    pred_day_decomp,
-    test["target_temp_night"],
-    pred_night_decomp,
-    "Baseline 3: Decomposition (+Noise)",
-)
+    evaluate_model(
+        test["target_temp_day"],
+        pred_day_decomp,
+        test["target_temp_night"],
+        pred_night_decomp,
+        "Baseline 3: Decomposition (+Noise)",
+        test,
+    )
 
-################################################
-# 3.1 Baseline: Decomposition (Trend + Season)
-################################################
+    ################################################
+    # 3.1 Baseline: Decomposition (Trend + Season)
+    ################################################
 
-pred_day_decomp = predict_decomposition(
-    train, test, "temp_day_current", add_noise=False
-)
-pred_night_decomp = predict_decomposition(
-    train, test, "temp_night_current", add_noise=False
-)
+    pred_day_decomp = predict_decomposition(
+        train, test, "temp_day_current", add_noise=False
+    )
+    pred_night_decomp = predict_decomposition(
+        train, test, "temp_night_current", add_noise=False
+    )
 
-evaluate_model(
-    test["target_temp_day"],
-    pred_day_decomp,
-    test["target_temp_night"],
-    pred_night_decomp,
-    "Baseline 3: Decomposition",
-)
+    evaluate_model(
+        test["target_temp_day"],
+        pred_day_decomp,
+        test["target_temp_night"],
+        pred_night_decomp,
+        "Baseline 3: Decomposition",
+        test,
+    )
 
-plt.show()
+    plt.show()

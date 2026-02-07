@@ -2,3 +2,4 @@
 tmp/
 data/
 .markdownlint.json
+__pycache__
