@@ -30,14 +30,14 @@ Ograniczyliśmy problem prognozy do dwóch zadań:
 ### Dependencje
 
 Żeby uruchomić skrypty potrzebny będzie python3 (>=3.12 jest ok, nie gwarantuję, że starszy będzie działał),
-i biblioteki: `numpy`,`pandas`, ... TODO
+i biblioteki: `numpy`,`pandas`, `numpy`, `pandas`, `matplotlib`, `seaborn`, `scikit-learn`, `xgboost`, `statsmodels`, `meteostat`.
 
 Można je zainstalować na przykład tak:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install TODO
+pip install numpy pandas matplotlib seaborn scikit-learn xgboost statsmodels meteostat
 ```
 
 ### Pobranie danych
@@ -48,46 +48,24 @@ Przed uruchomieniem notebooków trzeba pobrać dane:
 python download_data.py
 ```
 
-Po uruchomieniu, w aktualnym katalogu pojawią się pliki 
-(TODO) `wroclaw_multi_station.csv` i `wroclaw_multi_station_full.csv`,
-zawierające odpowiednio dane czyste i po wstępnym preprocessingu.
+Po uruchomieniu, w katalogu `data` pojawią się pliki `klodzko.csv`, `legnica.csv`, `opole.csv`, `poznan.csv`, `wroclaw.csv`, `wroclaw_daily.csv`.
+
+Dane z których korzystają modele tworzone w `preprocess.ipynb` - ten notebook też trzeba uruchomić przed uruchamianiem modeli.
 
 ### Notebooki
 
-- `eda.ipynb` - Eksploracyjna analiza danych (EDA) – statystyki opisowe, rozkłady zmiennych, korelacje, brakujące wartości, obserwacje odstające, wnioski z analizy
-- `preprocess.ipybn` - feature engineering i agregacja day/night
+- `eda.ipynb` - Eksploracyjna analiza danych
+- `preprocess.ipybn` - łączenie danych z różnych stacji i uzupełnianie braków
 
-#### Prognoza temperatury
+#### Prognoza temperatury na dzień i noc
 
-<!-- 
-Szczegółowy opis użytych modeli – jeśli nie są to klasyczne algorytmy omówione na wykładzie
-Metodologia ewaluacji – podział danych (train/test/validation), metryki jakości, walidacja krzyżowa
- -->
+- `temperature_baselines.ipynb` - modele beseline do predykcji temperatury
+- `temperature_xgboost.ipynb` - predykcja temperatury modelem xgboost
+- `temperature_sarima.ipynb` predykcja temperatury modelem SARIMAX
 
-- baselines
-- xgboots bez dodatkowych stacji
-- xgboost z dodatkowymi stacjiami
-- sarima
-- regresja liniowa
-- prophet
+#### Prognoza deszczu na następny dzień
 
-#### Prognoza deszczu
+`rain_classification.ipynb`
 
-- baselines (persistance, season)
-- regresjia logistyczna
-- xgboost
-- adaboost/ randomforest
-
-### Wyniki
-
-<!-- 
-Szczegółowy opis uzyskanych wyników – porównanie modeli, analiza błędów, wizualizacje
-Wnioski końcowe – podsumowanie, ograniczenia rozwiązania, perspektywy rozwoju 
--->
-
-`results.md`
-
-- coś o tym że problem jest trudny i jak się tak naprawdę przewiduje pogodę
-- porównanie modeli do deszczu
-- porównanie modeli do temperatury
-- wnioski: że prognoza chujowa, ale lepsza niż nasz baseline, a że było to trudne, to myślę że ogłaszamy sukces
+- baseline ("dziś tak jak wczoraj", "losowo z prawdopodobieństwem na podstawie przeszłych danych")
+- xgboost, adaboost, randomforest
